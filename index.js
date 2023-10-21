@@ -47,6 +47,37 @@ async function run() {
         res.send(result)
     })
 
+    app.get('/update/:id', async(req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = {_id: new ObjectId(id)}
+      const result = await productCollection.findOne(query)
+      console.log(result);
+      res.send(result)
+  })
+
+    app.put('/update/:id', async(req, res)=>{
+      const id = req.params.id;
+      const data = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const options = { upsert: true };
+      const updateProduct = {
+        $set: {
+
+          name: data.name, 
+          image: data.image,
+          brandName: data.brandName,
+          description: data.description,
+          price: data.price,
+          rating: data.rating,
+          type: data.type
+        },
+      };
+
+      const result = await productCollection.updateOne(filter, updateProduct, options);
+      res.send(result)
+    })
+
     app.post('/addproduct', async(req, res)=>{
         const product = req.body;
         console.log(product);
