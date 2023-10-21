@@ -30,6 +30,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const productCollection = client.db("brandDB").collection('productDB');
+    const orderCollection = client.db("brandDB").collection('ordersDB');
 
 
 
@@ -55,6 +56,20 @@ async function run() {
       console.log(result);
       res.send(result)
   })
+
+  app.get('/cart', async(req, res)=>{
+     const result = await orderCollection.find().toArray()
+     res.send(result)
+  })
+
+  app.get('/cart/:id', async(req, res)=>{
+      const id = req.params.id;
+      console.log(id);
+      const query = {_id: new ObjectId(id)}
+      const result = await orderCollection.findOne(query)
+      console.log(result);
+      res.send(result)
+ })
 
     app.put('/update/:id', async(req, res)=>{
       const id = req.params.id;
@@ -85,9 +100,23 @@ async function run() {
         res.send(result)
     })  
 
+    app.post('/orders', async(req,res)=>{
+      const orders = req.body;
+      const result = await orderCollection.insertOne(orders);
+      res.send(result)
+    })
 
 
-
+    app.delete('/cart/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = {
+        _id : new ObjectId(id)
+      };
+      const result = await orderCollection.deleteOne(query)
+      res.send(result)
+      console.log(result);
+      console.log(id);
+    })
 
 
 
